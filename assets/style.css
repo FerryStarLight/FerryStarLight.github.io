@@ -273,6 +273,29 @@ body {
   object-fit: cover;
 }
 
+/* 内联 SVG 头像：铺满方框，等比缩放 */
+.avatar svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * 头像换成图片/矢量图后，把渐变底色收成中性底：
+ * 透明背景的图标（比如蓝色星球）放在同色渐变上会糊成一团。
+ */
+.avatar.has-media {
+  background: #ffffff;
+  border-color: rgba(16, 24, 40, 0.08);
+  box-shadow: 0 16px 32px -20px rgba(16, 24, 40, 0.34);
+}
+
+[data-theme="dark"] .avatar.has-media {
+  background: #111a2c;
+  border-color: rgba(148, 163, 184, 0.22);
+  box-shadow: 0 16px 32px -20px rgba(0, 0, 0, 0.8);
+}
+
 .hero-greeting {
   margin: 0 0 10px;
   font-size: 11.5px;

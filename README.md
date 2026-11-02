@@ -10,6 +10,7 @@
 - **即时搜索**：`/` 或 `Ctrl/⌘ + K` 聚焦，实时过滤并高亮命中文字，`Enter` 直接打开第一个结果。
 - **深浅双主题**：默认跟随系统，可手动切换并记住选择；没有白屏闪烁。
 - **一个变量换主题色**：修改 `meta.accent`，卡片、光晕、图标与 favicon 自动跟随。
+- **矢量头像**：`meta.avatar` 支持 SVG —— 同源图标会内联进页面，可跟随 CSS 变量、任意缩放不糊；取不到源码时自动退回 `<img>`。
 - **纯静态**：CSS、JS、数据全部本地加载，无 CDN、无外部字体、无追踪；双击 `index.html` 就能用。
 - **细节完整**：响应式栅格、键盘可达、跳过导航、`prefers-reduced-motion`、无 JS 提示、搜索无结果状态。
 - **不到 50 KB**：未压缩的 HTML + CSS + JS + 配置，无任何运行时依赖。
@@ -33,7 +34,9 @@ homepage/
 │   ├── style.css         # 设计变量、布局、组件样式
 │   └── app.js            # 渲染、搜索、主题、快捷键
 ├── data/
-│   └── site.config.js    # ← 日常只需要改这个文件
+│   ├── site.config.js    # ← 日常只需要改这个文件
+│   ├── avatar.svg        # 头像（SVG 会内联进页面）
+│   └── avataricon.png    # 头像原始位图，avatar.svg 由它拟合而来
 └── README.md
 ```
 
@@ -46,12 +49,25 @@ meta: {
   name: "九歌",
   tagline: "在代码与文字之间，留一点光。",
   description: "九歌的个人导航。",
-  avatar: "",              // 留空显示名字首字，也可填图片地址
+  avatar: "./data/avatar.svg", // 留空显示名字首字；SVG 会内联，其它格式按普通图片显示
   accent: "#4f6ef7",       // 任意 HEX 颜色
   footer: "© {year} 九歌", // {year} 会自动替换为当前年份
   greeting: true,          // 名字上方的问候与日期
 }
 ```
+
+#### 头像支持 SVG
+
+`meta.avatar` 有四种写法，按优先级从高到低：
+
+| 写法 | 行为 |
+| --- | --- |
+| `avatar: "<svg …>…</svg>"` | 直接内联这段 SVG 源码 |
+| `avatar: "./data/avatar.svg"` | 同源 SVG 先取回源码再内联（可跟随主题色、缩放不糊），取不到源码时退回 `<img>` |
+| `avatar: "./data/avataricon.png"` | 普通图片，加载失败回退首字 |
+| `avatar: ""` | 显示名字首字 |
+
+内联的 SVG 会去掉 `<script>`、事件属性、外链引用，并给 `id` 加 `avatar-svg-` 前缀，避免和别的元素撞名；因此手写图标里用 `mask` / `clipPath` / `id` 都是安全的。双击 `index.html`（`file://`）时 `fetch` 不可用，会自动走 `<img>` 分支，显示效果一致。
 
 ### 2. 增删站点
 
@@ -98,7 +114,7 @@ sections: [
 | `meta.tagline` |  | 一句话简介 |
 | `meta.description` |  | 页面 `<meta description>` |
 | `meta.title` |  | 浏览器标题，默认「名字 · 导航」 |
-| `meta.avatar` |  | 头像图片地址；留空则用首字 |
+| `meta.avatar` |  | 头像：SVG 源码 / SVG 地址（内联）/ 图片地址；留空则用首字 |
 | `meta.accent` |  | 主题色，HEX 格式 |
 | `meta.footer` |  | 页脚文字，支持 `{year}` |
 | `meta.greeting` |  | 设为 `false` 可隐藏问候语 |

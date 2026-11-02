@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" width="200" height="200" viewBox="0 0 200 200">
+	
+  <defs>
+    <mask id="COutline">
+      <rect x="-50" y="-50" width="300" height="300" fill="white" />
+	  <circle cx="100" cy="100" fill="white" r="72" stroke="black" stroke-width="10" />
+	  <rect x="-50" y="100" width="300" height="100" fill="white"/>
+	  <ellipse cx="100" cy="100" rx="90" ry="20" fill="black" />
+	</mask>
+  </defs>
+  
+  <defs>
+	<mask id="EOutline">
+	  <rect x="0" y="0" width="300" height="300" fill="white" />
+	  <ellipse cx="100" cy="100" rx="90" ry="20" stroke="black" stroke-width="15" fill="white" />
+	  <rect x="-50" y="0" width="300" height="100" fill="white"/>
+	</mask>
+  </defs>
+
+  <ellipse cx="100" cy="100" rx="110" ry="30" fill="#36ADFF"
+	mask="url(#COutline)"
+	transform="rotate(30 100 100)"
+  />
+  
+  <circle cx="100" cy="100" r="70" mask="url(#EOutline)" fill="#36ADFF" transform="rotate(30 100 100)"/>
+  
+</svg>

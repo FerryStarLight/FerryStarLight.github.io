@@ -10,13 +10,19 @@
  *   url   必填，http(s) / mailto / 相对路径
  *   desc  选填，一句话介绍（同时参与搜索）
  *   icon  选填，emoji 或图片地址；不填则自动生成首字母图标
+ *
+ * 头像（meta.avatar）：
+ *   留空        → 显示名字首字
+ *   "./data/avatar.svg" → SVG 会被内联进页面（可跟随主题色），取不到源码时自动退回 <img>
+ *   "任意图片地址"       → 普通图片
+ *   "<svg …>…</svg>"    → 直接内联 SVG 源码
  */
 window.SITE = {
   meta: {
     name: "渡一缕星光",
     tagline: "自上不会人情世故, 自下不懂油盐酱醋. ",
     description: "渡一缕星光的个人导航 -- 用于常用网站和个人网页导航",
-    avatar: "./data/template.png", // 留空则显示名字首字；也可填图片地址
+    avatar: "./data/avatar.svg", // 带星环的星球图标，由 avataricon.png 拟合而来
     accent: "#4f6ef7", // 主题色，改成你喜欢的任意 HEX 颜色
     footer: "© {year} FerryLight · 保持好奇 - Developed by AI",
     greeting: true, // 是否在名字上方显示问候与日期

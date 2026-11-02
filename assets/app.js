@@ -113,6 +113,115 @@
     );
   }
 
+  /** 头像允许内联的 SVG 体积上限，避免误把超大文件塞进 DOM。 */
+  const AVATAR_SVG_LIMIT = 128 * 1024;
+
+  /** `meta.avatar` 直接写成 <svg>…</svg> 源码时走内联分支。 */
+  function isSvgMarkup(value) {
+    return /^\s*<svg[\s>]/i.test(String(value || ""));
+  }
+
+  /** 以 .svg 结尾的图片地址（允许带 ?query 或 #fragment）。 */
+  function isSvgUrl(url) {
+    return /\.svg(?:[?#]|$)/i.test(String(url || ""));
+  }
+
+  /**
+   * 清洗 SVG 源码，返回可以内联的节点。
+   * 去掉脚本类元素、事件属性、外链引用，并给 id 加前缀避免同页重复；
+   * 解析失败返回 null，调用方退回 <img> 或名字首字。
+   */
+  function sanitizeSvg(markup) {
+    if (typeof markup !== "string" || markup.length > AVATAR_SVG_LIMIT) return null;
+    const doc = new DOMParser().parseFromString(markup, "image/svg+xml");
+    if (!doc || doc.getElementsByTagName("parsererror").length) return null;
+
+    const svg = doc.documentElement;
+    if (!svg || svg.tagName.toLowerCase() !== "svg") return null;
+
+    const FORBIDDEN = new Set([
+      "script", "foreignobject", "iframe", "object", "embed", "audio", "video", "canvas", "link",
+    ]);
+    const REMOTE = /url\(\s*['"]?(?:https?:|\/\/|javascript:)/i;
+    const nodes = [svg, ...svg.querySelectorAll("*")];
+
+    nodes.forEach((node) => {
+      if (FORBIDDEN.has(node.tagName.toLowerCase())) {
+        node.remove();
+        return;
+      }
+      Array.from(node.attributes).forEach((attribute) => {
+        const name = attribute.name.toLowerCase();
+        const value = attribute.value;
+        if (name.startsWith("on")) {
+          node.removeAttribute(attribute.name);
+        } else if (name === "href" || name === "xlink:href" || name === "src") {
+          // 只认同文档锚点与 data:image，外部文件引用会被浏览器再请求一次
+          if (!value.trim().startsWith("#") && !/^data:image\//i.test(value)) {
+            node.removeAttribute(attribute.name);
+          }
+        } else if (name === "style") {
+          if (/expression\(|@import|url\(\s*['"]?(?:https?:|\/\/|javascript:)/i.test(value)) {
+            node.removeAttribute(attribute.name);
+          }
+        } else if (REMOTE.test(value)) {
+          node.removeAttribute(attribute.name);
+        }
+      });
+    });
+
+    // id 加前缀，避免与页面其它元素（或另一份内联图标）撞名
+    const prefix = "avatar-svg-";
+    const renamed = new Map();
+    nodes.forEach((node) => {
+      const id = node.getAttribute("id");
+      if (!id) return;
+      renamed.set(id, prefix + id);
+      node.setAttribute("id", prefix + id);
+    });
+    if (renamed.size) {
+      const swap = (text) =>
+        text.replace(/#([\w:.-]+)/g, (match, id) => (renamed.has(id) ? "#" + renamed.get(id) : match));
+      const REF = [
+        "href", "xlink:href", "fill", "stroke", "filter", "mask", "clip-path",
+        "marker-start", "marker-mid", "marker-end", "style",
+      ];
+      nodes.forEach((node) => {
+        REF.forEach((name) => {
+          const value = node.getAttribute(name);
+          if (!value || value.indexOf("#") === -1) return;
+          const next = swap(value);
+          if (next !== value) node.setAttribute(name, next);
+        });
+      });
+      svg.querySelectorAll("style").forEach((style) => {
+        const text = style.textContent || "";
+        const next = swap(text);
+        if (next !== text) style.textContent = next;
+      });
+    }
+
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("aria-hidden", "true");
+    return document.importNode(svg, true);
+  }
+
+  /** 取回同源 SVG 源码再内联；file:// 与跨域取不到源码时返回 null。 */
+  async function fetchSvg(url) {
+    try {
+      const response = await fetch(url, { credentials: "same-origin" });
+      if (!response.ok) return null;
+      const type = response.headers.get("content-type") || "";
+      if (type && !/svg/i.test(type)) return null;
+      return sanitizeSvg(await response.text());
+    } catch (error) {
+      return null;
+    }
+  }
+
   function hostOf(url) {
     if (!/^(?:https?:|mailto:|tel:)/i.test(url)) return "";
     try {
@@ -353,6 +462,57 @@
     if (metaDescription) metaDescription.setAttribute("content", description);
   }
 
+  /**
+   * 头像优先级：内联 SVG 源码 → .svg 地址（先尝试内联）→ 普通图片 → 名字首字。
+   * 内联后的 SVG 能跟随 CSS（currentColor / 变量），缩放也不会糊。
+   */
+  function renderAvatar(avatar) {
+    const showInitials = () => {
+      avatar.classList.remove("has-media");
+      avatar.textContent = initialOf(META.name || "N");
+    };
+    showInitials();
+
+    const raw = typeof META.avatar === "string" ? META.avatar.trim() : "";
+    if (!raw) return;
+
+    if (isSvgMarkup(raw)) {
+      const node = sanitizeSvg(raw);
+      if (!node) return;
+      avatar.replaceChildren(node);
+      avatar.classList.add("has-media");
+      return;
+    }
+
+    const url = safeUrl(raw);
+    if (!url || /^(?:mailto:|tel:)/i.test(url) || url.startsWith("#")) return;
+
+    const showImage = () => {
+      const image = h("img", { src: url, alt: "", decoding: "async" });
+      image.addEventListener("load", () => avatar.classList.add("has-media"), { once: true });
+      image.addEventListener("error", () => {
+        image.remove();
+        showInitials();
+      });
+      avatar.replaceChildren(image);
+    };
+
+    if (!isSvgUrl(url)) {
+      showImage();
+      return;
+    }
+
+    // 同源 SVG 先内联；双击打开（file://）或跨域读不到源码时退回 <img>。
+    fetchSvg(url).then((node) => {
+      if (!node) {
+        showImage();
+        return;
+      }
+      avatar.replaceChildren(node);
+      avatar.classList.add("has-media");
+    });
+  }
+
   function renderHero() {
     const hero = $("#hero");
     if (!hero) return;
@@ -362,17 +522,7 @@
     hero.append(h("div", { class: "hero-tools" }, themeButton));
 
     const avatar = h("div", { class: "avatar", "aria-hidden": "true" });
-    const avatarUrl = META.avatar ? safeUrl(META.avatar) : "";
-    if (avatarUrl && !/^(?:mailto:|tel:)/i.test(avatarUrl) && !avatarUrl.startsWith("#")) {
-      const image = h("img", { src: avatarUrl, alt: "" });
-      image.addEventListener("error", () => {
-        image.remove();
-        avatar.textContent = initialOf(META.name || "N");
-      });
-      avatar.append(image);
-    } else {
-      avatar.textContent = initialOf(META.name || "N");
-    }
+    renderAvatar(avatar);
     hero.append(avatar);
 
     if (META.greeting !== false) {
