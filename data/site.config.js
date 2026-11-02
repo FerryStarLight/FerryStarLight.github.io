@@ -22,9 +22,9 @@ window.SITE = {
     name: "渡一缕星光",
     tagline: "自上不会人情世故, 自下不懂油盐酱醋. ",
     description: "渡一缕星光的个人导航 -- 用于常用网站和个人网页导航",
-    avatar: "./data/avatar.svg", // 带星环的星球图标，由 avataricon.png 拟合而来
+    avatar: "./data/avatar.svg", // 带星环的星球图标
     accent: "#4f6ef7", // 主题色，改成你喜欢的任意 HEX 颜色
-    footer: "© {year} FerryLight · 保持好奇 - Developed by AI",
+    footer: "© {year} FerryLight · 保持好奇",
     greeting: true, // 是否在名字上方显示问候与日期
   },
 
@@ -40,17 +40,17 @@ window.SITE = {
       title: "常用",
       links: [
         { name: "GitHub", url: "https://github.com/", desc: "代码、开源与协作" },
-        { name: "知乎", url: "https://www.zhihu.com/", desc: "问答与长文" },
         { name: "哔哩哔哩", url: "https://www.bilibili.com/", desc: "视频与学习区" },
-        { name: "Mc百科", url: "https://www.mcmod.cn/v2/", desc: "Minecraft中文Mod百科" },
-        { name: "DeepSeek", url: "https://chat.deepseek.com/", desc: "肥鱼网页对话端" },
+        { name: "MC Wiki", url: "https://zh.minecraft.wiki/", desc: "Minecraft中文维基" },
+        { name: "MC百科", url: "https://www.mcmod.cn/v2/", desc: "Minecraft中文Mod百科" },
+        { name: "DeepSeek", url: "https://chat.deepseek.com/", desc: "蓝色大肥鱼网页对话端" },
       ],
     },
     
     {
       title: "学习",
       links: [
-        { name: "DeepSeek", url: "https://chat.deepseek.com/", desc: "肥鱼网页对话端" },
+        { name: "DeepSeek", url: "https://chat.deepseek.com/", desc: "蓝色大网页对话端" },
         { name: "知乎", url: "https://www.zhihu.com/", desc: "问答与长文" },
         { name: "Desmos", url: "https://www.desmos.com/", desc: "数学绘图工具" },
         { name: "WolframAlpha", url: "https://zh.wolframalpha.com/", desc: "数学计算器" },
@@ -67,9 +67,10 @@ window.SITE = {
     {
       title: "游戏",
       links: [
-        { name: "McWiki", url: "https://zh.minecraft.wiki/", desc: "Minecraft中文维基" },
+        { name: "MC Wiki", url: "https://zh.minecraft.wiki/", desc: "Minecraft中文维基" },
         { name: "LittleSkin", url: "https://littleskin.cn/", desc: "Little Skin 皮肤站" },
-        { name: "Mc百科", url: "https://www.mcmod.cn/v2/", desc: "Minecraft中文Mod百科" },
+        { name: "MC百科", url: "https://www.mcmod.cn/v2/", desc: "Minecraft中文Mod百科" },
+        { name: "ChunkBase", url: "https://www.chunkbase.com/apps/seed-map", desc: "Minecraft查种器" },
         { name: "TUF论坛", url: "https://tuforums.com/", desc: "The Universal Forums" },
       ],
     },
