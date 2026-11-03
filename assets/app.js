@@ -62,6 +62,8 @@
   let emptyReset = null;
   let searchStatus = null;
   let statusTimer = 0;
+  let greetingEl = null;
+  let greetingTimer = 0;
 
   /* ------------------------------------------------------------------------ *
    * 1. 通用工具
@@ -405,8 +407,13 @@
     link.setAttribute("href", "data:image/svg+xml," + encodeURIComponent(svg));
   }
 
-  function greetingText() {
-    const now = new Date();
+  /** 24 小时制 HH:MM：手写补零，避免 toLocaleTimeString 在不同地区给出 12 小时制或非 ASCII 数字。 */
+  function clockText(date) {
+    const pad = (value) => String(value).padStart(2, "0");
+    return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  function greetingText(now = new Date()) {
     const hour = now.getHours();
     let part = "晚上好";
     if (hour < 5) part = "夜深了";
@@ -416,7 +423,40 @@
     else if (hour < 18) part = "下午好";
     else if (hour >= 23) part = "夜深了";
     const week = "日一二三四五六"[now.getDay()];
-    return `${part} · ${now.getMonth() + 1}月${now.getDate()}日 周${week}`;
+    return `${part} · ${now.getMonth() + 1}月${now.getDate()}日 周${week} · ${clockText(now)} `;
+  }
+
+  function updateGreeting() {
+    if (greetingEl) greetingEl.textContent = greetingText();
+  }
+
+  /** 只决定“什么时候刷新”；内容每次都由 new Date() 重算，所以不会累积漂移。 */
+  function scheduleGreeting() {
+    window.clearTimeout(greetingTimer);
+    const now = new Date();
+    // 对齐到下一个整分；多等 30ms，避免定时器略早触发时又显示上一分钟
+    const wait = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds()) + 30;
+    greetingTimer = window.setTimeout(() => {
+      updateGreeting();
+      scheduleGreeting();
+    }, wait);
+  }
+
+  /** 问候语时钟：整分刷新，切回前台或从 bfcache 恢复时立即补一次。 */
+  function startGreetingClock() {
+    if (!greetingEl) return;
+    const tick = () => {
+      updateGreeting();
+      scheduleGreeting();
+    };
+    tick();
+
+    // 后台标签页的定时器会被降频，隐藏时干脆停表，切回来立刻对齐
+    document.addEventListener("visibilitychange", () => {
+      window.clearTimeout(greetingTimer);
+      if (!document.hidden) tick();
+    });
+    window.addEventListener("pageshow", tick);
   }
 
   /* ------------------------------------------------------------------------ *
@@ -581,30 +621,14 @@
       : null;
 
     hero.append(h("div", { class: "hero-tools" }, repoLink, themeButton));
-    // const repoIcon = getRepoIcon();
-    // hero.append(
-    //   h(
-    //     "div",
-    //     { class: "hero-tools" },
-    //     h("a", repoUrl ? {
-    //       class: "icon-btn",
-    //       href: repoUrl,
-    //       target: "_blank",
-    //       rel: "noopener noreferrer",
-    //       "aria-label": "查看源码",
-    //       title: "查看源码",
-    //       html: repoIcon,
-    //     } : null),
-    //     themeButton
-    //   )
-    // );
 
     const avatar = h("div", { class: "avatar", "aria-hidden": "true" });
     renderAvatar(avatar);
     hero.append(avatar);
 
     if (META.greeting !== false) {
-      hero.append(h("p", { class: "hero-greeting", text: greetingText() }));
+      greetingEl = h("p", { class: "hero-greeting", text: greetingText() });
+      hero.append(greetingEl);
     }
     hero.append(h("h1", { class: "hero-name", text: String(META.name || "个人导航") }));
     if (META.tagline) {
@@ -941,6 +965,7 @@
     setFavicon(accent);
     applyMeta();
     renderHero();
+    startGreetingClock();
     renderSections();
     renderFooter();
     initSearch();
