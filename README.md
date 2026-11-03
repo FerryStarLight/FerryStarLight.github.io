@@ -52,7 +52,7 @@ meta: {
   accent: "#4f6ef7", // 主题色，改成你喜欢的任意 HEX 颜色
   footer: "© {year} FerryLight · 保持好奇", // 页脚
   greeting: true, // 是否在名字上方显示问候与日期
-  repo: "https://github.com", // Github仓库地址, 留空或删除时不显示跳转按钮
+  repo: "https://github.com/FerryStarLight/FerryStarLight.github.io", // Github仓库地址, 留空或删除时不显示跳转按钮
   repoIcon: "./data/avatar.svg", // 仓库跳转按钮图标, 默认或无效时使用内置Github图标
 }
 ```

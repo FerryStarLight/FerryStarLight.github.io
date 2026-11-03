@@ -26,7 +26,7 @@ window.SITE = {
     accent: "#4f6ef7", // 主题色，改成你喜欢的任意 HEX 颜色
     footer: "© {year} FerryLight · 保持好奇",
     greeting: true, // 是否在名字上方显示问候与日期
-    repo: "https://github.com/FerryStarLight/FerryStarLight.github.io", // Github仓库地址, 留空或删除时不显示跳转按钮
+    repo: "https://www.bilibili.com/video/BV1GJ411x7h7", // Github仓库地址, 留空或删除时不显示跳转按钮
     repoIcon: "", // 仓库跳转按钮图标, 默认或无效时使用github
   },
 
@@ -54,8 +54,6 @@ window.SITE = {
       links: [
         { name: "DeepSeek", url: "https://chat.deepseek.com/", desc: "蓝色大网页对话端" },
         { name: "知乎", url: "https://www.zhihu.com/", desc: "问答与长文" },
-        { name: "Desmos", url: "https://www.desmos.com/", desc: "数学绘图工具" },
-        { name: "WolframAlpha", url: "https://zh.wolframalpha.com/", desc: "数学计算器" },
         { name: "菜鸟教程", url: "https://www.runoob.com/", desc: "IT领域教程" },
         { name: "中科大", url: "https://i.ustc.edu.cn/", desc: "中国科学技术大学官网" },
       ],
@@ -64,6 +62,8 @@ window.SITE = {
       title: "工具",
       links: [
         { name: "Github 文件下载代理", url: "https://github.akams.cn/", desc: "Github 文件代理, 加速下载" },
+        { name: "Desmos", url: "https://www.desmos.com/", desc: "数学绘图工具" },
+        { name: "WolframAlpha", url: "https://zh.wolframalpha.com/", desc: "数学计算器" },
       ],
     },
     {
@@ -74,6 +74,7 @@ window.SITE = {
         { name: "MC百科", url: "https://www.mcmod.cn/v2/", desc: "Minecraft中文Mod百科" },
         { name: "ChunkBase", url: "https://www.chunkbase.com/apps/seed-map", desc: "Minecraft查种器" },
         { name: "TUF论坛", url: "https://tuforums.com/", desc: "The Universal Forums" },
+        { name: "Steam", url: "https://steamcommunity.com/", desc: "不会有人还找不到Steam吧" },
       ],
     },
     {
