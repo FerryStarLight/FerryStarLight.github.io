@@ -240,14 +240,36 @@ body {
   transform: translateY(-1px);
 }
 
-.icon-btn svg {
+.icon-btn svg,
+.icon-btn img {
+  display: block;
   width: 17px;
   height: 17px;
+}
+
+.icon-btn img {
+  object-fit: contain;   /* 非正方形图标不拉伸 */
+}
+
+/* 内置线条图标（太阳 / 月亮） */
+.icon-btn svg.is-line {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 内置实心图标（GitHub 标志） */
+.icon-btn svg.is-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* 实心图标（如 GitHub 标志）：只填充，不描边 */
+.icon-btn svg.is-solid {
+  fill: currentColor;
+  stroke: none;
 }
 
 .avatar {

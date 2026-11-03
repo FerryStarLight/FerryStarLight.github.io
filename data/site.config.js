@@ -22,10 +22,12 @@ window.SITE = {
     name: "渡一缕星光",
     tagline: "自上不会人情世故, 自下不懂油盐酱醋. ",
     description: "渡一缕星光的个人导航 -- 用于常用网站和个人网页导航",
-    avatar: "./data/avatar.svg", // 带星环的星球图标
+    avatar: "./data/avatar.svg", // 头像图标
     accent: "#4f6ef7", // 主题色，改成你喜欢的任意 HEX 颜色
     footer: "© {year} FerryLight · 保持好奇",
     greeting: true, // 是否在名字上方显示问候与日期
+    repo: "https://github.com/FerryStarLight/FerryStarLight.github.io", // Github仓库地址, 留空或删除时不显示跳转按钮
+    repoIcon: "", // 仓库跳转按钮图标, 默认或无效时使用github
   },
 
   // 顶部社交链接，图标可选

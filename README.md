@@ -29,14 +29,13 @@ python -m http.server 8000
 
 ```text
 homepage/
-├── index.html            # 页面骨架（结构语义化，内容由 JS 渲染）
+├── index.html            # 页面骨架 (结构语义化，内容由 JS 渲染)
 ├── assets/
 │   ├── style.css         # 设计变量、布局、组件样式
 │   └── app.js            # 渲染、搜索、主题、快捷键
 ├── data/
 │   ├── site.config.js    # ← 日常只需要改这个文件
-│   ├── avatar.svg        # 头像（SVG 会内联进页面）
-│   └── avataricon.png    # 头像原始位图，avatar.svg 由它拟合而来
+│   ├── avatar.svg        # 头像 (可选)
 └── README.md
 ```
 
@@ -46,13 +45,15 @@ homepage/
 
 ```js
 meta: {
-  name: "九歌",
-  tagline: "在代码与文字之间，留一点光。",
-  description: "九歌的个人导航。",
-  avatar: "./data/avatar.svg", // 留空显示名字首字；SVG 会内联，其它格式按普通图片显示
-  accent: "#4f6ef7",       // 任意 HEX 颜色
-  footer: "© {year} 九歌", // {year} 会自动替换为当前年份
-  greeting: true,          // 名字上方的问候与日期
+  name: "渡一缕星光",
+  tagline: "自上不会人情世故, 自下不懂油盐酱醋. ",
+  description: "渡一缕星光的个人导航 -- 用于常用网站和个人网页导航",
+  avatar: "./data/avatar.svg", // 头像图标
+  accent: "#4f6ef7", // 主题色，改成你喜欢的任意 HEX 颜色
+  footer: "© {year} FerryLight · 保持好奇", // 页脚
+  greeting: true, // 是否在名字上方显示问候与日期
+  repo: "https://github.com", // Github仓库地址, 留空或删除时不显示跳转按钮
+  repoIcon: "./data/avatar.svg", // 仓库跳转按钮图标, 默认或无效时使用内置Github图标
 }
 ```
 
@@ -98,7 +99,12 @@ sections: [
 
 空分组会被自动忽略；没有配置任何链接时，页面会显示引导提示。
 
-### 4. 图标
+### 4. 仓库按钮
+
+`repo` 字段填写合法仓库地址后, 页面右上角将会出现仓库跳转按钮. 
+`repoIcon` 字段用于控制跳转按钮图标, 支持图像或svg文件, 以及内联`<svg></svg>`. 无效时将退回到默认的Github图标
+
+### 5. 图标
 
 按优先级：
 
@@ -118,6 +124,8 @@ sections: [
 | `meta.accent` |  | 主题色，HEX 格式 |
 | `meta.footer` |  | 页脚文字，支持 `{year}` |
 | `meta.greeting` |  | 设为 `false` 可隐藏问候语 |
+| `meta.repo` |  | 仓库地址, 无效时隐藏仓库按钮 |
+| `meta.repoIcon` |  | 仓库按钮图标 |
 | `social[].label` | ✓ | 社交入口文字 |
 | `social[].url` | ✓ | 链接 |
 | `social[].icon` |  | emoji |
